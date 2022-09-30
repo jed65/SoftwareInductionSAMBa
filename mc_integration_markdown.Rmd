@@ -1,0 +1,63 @@
+---
+title: "MC Integration"
+author: "Veronika Chronholm"
+date: "30 September 2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(plot3D)
+```
+
+## Introduction
+
+For this project, we compute the integral
+
+$$ \int_0^1 \int_0^1 \frac{1}{1+\sin^2(x)+\sin^2(y)} dxdy $$
+using Monte Carlo integration.
+
+## Function surface plot
+
+Below we can see a 3D surface plot of the integrand.
+
+```{r, echo=FALSE}
+
+# approximating trig integral
+trig_fun  <- function(x,y){
+  denominator <- 1 + sin(x)^2 + sin(y)^2
+  return(1/denominator)
+}
+
+# plotting a 3d surface
+x_vals <- seq(0,1,0.01)  # vector of x vals
+y_vals <- seq(0,1,0.01)  # vector of y vals
+m = mesh(x_vals,y_vals)  # creating a x-y mesh
+x <- m$x  # these lines...
+y<- m$y  # use the mesh object m created above
+z <- trig_fun(x,y)  # function vals
+
+# full colored image
+surf3D(x, y, z, colvar = z, colkey = TRUE, shade = 0.5,
+       box = TRUE, theta = 60, bty="b2", contour=TRUE)
+```
+
+## Monte Carlo integration R code
+Below is included the R code used for the Monte Carlo integration.
+
+```{r}
+
+set.seed(100)  # sets state for rng
+n <- 10000
+rand_x <- runif(n,min=0,max=1)  # generates n unif rn between 0 and 1 
+rand_y <- runif(n,min=0,max=1)  # and again
+
+# approximating trig integral
+trig_fun  <- function(x,y){
+  denominator <- 1 + sin(x)^2 + sin(y)^2
+  return(1/denominator)
+}
+
+trig_vals <- trig_fun(rand_x,rand_y)  # function vals
+trig_int_approx <- mean(trig_vals)  # integral approximation by calculating mean
+```
